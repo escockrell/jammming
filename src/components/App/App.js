@@ -4,26 +4,16 @@ import './App.css';
 import SearchBar from '../SearchBar/SearchBar';
 import SearchResults from '../SearchResults/SearchResults';
 import PlayList from '../Playlist/Playlist';
+import Spotify from '../../util/Spotify';
 
 function App() {
-  const sampleTracks = [
-    { 
-      name: "Livin' on a Prayer",
-      artist: "Bon Jovi",
-      album: "Livin' on a Prayer - Single",
-      id: "1"
-    },
-    { 
-      name: "Don't Stop Believin'",
-      artist: "Journey",
-      album: "Journey Greatest Hits",
-      id: "2"
-    }
-  ]
-
-  const [searchResults, setSearchResults] = useState(sampleTracks);
+  const [searchResults, setSearchResults] = useState([]);
   const [playlistName, setPlaylistName] = useState("New Playlist");
   const [playlistTracks, setPlaylistTracks] = useState([]);
+
+  const search = useCallback((term) => {
+    Spotify.search(term).then(setSearchResults);
+  }, []);
 
   const addTrack = useCallback(
     (track) => {
@@ -45,11 +35,21 @@ function App() {
     setPlaylistName(name);
   }, []);
 
+  const savePlaylist = useCallback(() => {
+    const trackUris = playlistTracks.map((track) => track.uri);
+    Spotify.savePlaylist(playlistName, trackUris).then(() => {
+      setPlaylistName("New Playlist");
+      setPlaylistTracks([]);
+      /* const playlistNameElement = document.getElementsByClassName("Playlist-name")[0];
+      playlistNameElement.innerHTML = "New Playlist"; */
+    });
+  }, [playlistName, playlistTracks]);
+
   return (
     <div>
       <h1>Jammming!</h1>
       <div className='App'>
-        <SearchBar />
+        <SearchBar onSearch={search} />
         <div className='App-playlist'>
           <SearchResults searchResults={searchResults} onAdd={addTrack} />
           <PlayList 
@@ -57,6 +57,7 @@ function App() {
             playlistTracks={playlistTracks}
             onNameChange={updatePlaylistName}
             onRemove={removeTrack}
+            onSave={savePlaylist}
           />
         </div>
       </div>

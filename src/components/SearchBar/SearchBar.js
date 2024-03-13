@@ -10,10 +10,14 @@ function SearchBar(props) {
     console.log(searchTerm);
   }, []);
 
+  const search = useCallback(() => {
+    props.onSearch(searchTerm);
+  }, [props.onSearch, searchTerm]);
+
   return (
     <div className='SearchBar'>
       <input placeholder='Enter a song title' onChange={handleSearchTermChange}/>
-      <button className='SearchButton'>
+      <button className='SearchButton' onClick={search}>
         Search
       </button>
     </div>
