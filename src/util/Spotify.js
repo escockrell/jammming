@@ -1,8 +1,3 @@
-import dotenv from 'dotenv';
-
-dotenv.config();
-
-
 const clientId = process.env.REACT_APP_SPOTIFY_CLIENT_ID; // Insert client ID here.
 const redirectUri = 'http://localhost:3000/'; // Have to add this to your accepted Spotify redirect URIs on the Spotify API.
 let accessToken;
@@ -33,7 +28,8 @@ const Spotify = {
 
   search(term) {
     const accessToken = Spotify.getAccessToken();
-    return fetch(`https://api.spotify.com/v1/search?type=track&q=${term}`, {
+    const encodedTerm = encodeURIComponent(term);
+    return fetch(`https://api.spotify.com/v1/search?type=track&q=${encodedTerm}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`
       }

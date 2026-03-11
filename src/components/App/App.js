@@ -12,7 +12,12 @@ function App() {
   const [playlistTracks, setPlaylistTracks] = useState([]);
 
   const search = useCallback((term) => {
-    Spotify.search(term).then(setSearchResults);
+    Spotify.search(term)
+      .then(setSearchResults)
+      .catch((err) => {
+        console.error('Search failed:', err);
+        setSearchResults([]);
+      });
   }, []);
 
   const addTrack = useCallback(
